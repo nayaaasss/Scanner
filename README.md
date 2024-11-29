@@ -1,27 +1,22 @@
 
-## QR Scanner App
+# QR Scanner
 
-A Mobile-based QR Scanner and Generator App.
-
+a mobile app scanner where we can scan QR codes, and share the code
 
 
 ## Features
 
-- QR Scanner Page
-- QR Generator Page
+- Scan QR 
+- link to generate
+- share QR
+
 
 
 ## Tech Stack
 
-**Front-End:** 
+**Frontend:** Dart v.3.2.4 (stable), Flutter v.3.24.5 (stable channel)
 
-- Dart v.3.2.4 (stable)
-- Flutter v.3.24.5 (stable channel)
-
-**Dependencies:** 
-
-- mobile_scanner
-- pretty_qr_code
+**Depedencies:** mobile_scanner, pretty_qr_code
 
 
 ## Usage
