@@ -16,41 +16,9 @@ class QrGeneratorScreen extends StatefulWidget {
 class _QrGeneratorScreenState extends State<QrGeneratorScreen> {
   String? qrLink;
   bool isGenerated = false;
-  final ScreenshotController _screenshotController = ScreenshotController();
+  final ScreenshotController screenshotController = ScreenshotController();
 
     // Fungsi untuk membagikan QR Code
-  void _shareQRCode() async {
-    if (qrLink != null) {
-      // Ambil screenshot QR Code
-      final Uint8List imageBytes =
-          await _screenshotController.captureFromWidget(
-        PrettyQr(
-          data: qrLink!,
-          size: 200,
-          roundEdges: true,
-          elementColor: const Color(0xFF2B61E3),
-        ),
-      );
-
-   // Jika screenshot berhasil
-      if (imageBytes!= null) {
-        // Simpan file gambar ke penyimpanan lokal
-        final directory = await getApplicationDocumentsDirectory();
-        final imagePath = '${directory.path}/qr_code.png';
-
-        final imageFile = File(imagePath)..writeAsBytesSync(imageBytes);
-
-        // Mengonversi File ke XFile
-        final xFile = XFile(imageFile.path);
-
-        // Bagikan file gambar QR Code
-        await Share.shareXFiles(
-          [xFile], // Bagikan file gambar QR Code
-          text: "Here is my QR code!",
-        );
-      }
-    }
-  }
   String? qrRawValue;
 
  @override
@@ -131,18 +99,23 @@ class _QrGeneratorScreenState extends State<QrGeneratorScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Screenshot(
-                            controller: _screenshotController,
-                            child: PrettyQr(
-                              data: qrLink!,
-                              size: 200,
-                              roundEdges: true,
-                              elementColor: const Color(0xFF2B61E3),
+                            controller: screenshotController,
+                            child: Screenshot(
+                              controller: ScreenshotController(),
+                              child: PrettyQr(
+                                data: qrLink!,
+                                size: 200,
+                                roundEdges: true,
+                                elementColor: const Color(0xFF2B61E3),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 70),
                           // Tombol Share
                           ElevatedButton.icon(
-                            onPressed: _shareQRCode,
+                            onPressed: () {
+                              _shareQrCode();
+                            },
                             icon: Icon(Icons.share, color: Colors.white,),
                             label: Text("Share QR Code", style: TextStyle(color: Colors.white),),
                             style: ElevatedButton.styleFrom(
@@ -165,6 +138,19 @@ class _QrGeneratorScreenState extends State<QrGeneratorScreen> {
       ),
     );
   }
+  Future<void> _shareQrCode() async {
+    // ambil screenshot dari QR
+    final image = await screenshotController.capture();
+    if (image != null) {
+      // kalau berhasil ambil gambar, share menggunakan Share Plus
+      await Share.shareXFiles([
+        XFile.fromData(
+          image,
+          name: "qr_code.png", // nama file screenshot
+          mimeType: "image/png", // format file
+        ),
+      ]);
+    }
+  }
   
-  getApplicationDocumentsDirectory() {}
 }
